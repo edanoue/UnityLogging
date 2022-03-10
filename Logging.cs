@@ -6,15 +6,12 @@ namespace Edanoue.Logging
 {
     public static class Logging
     {
-        static readonly Logger _rootLogger;
+        static readonly RootLogger _rootLogger;
 
         static Logging()
         {
             // Create new root logger
-            _rootLogger = Logger.GetRootLogger();
-
-            // Enable Unity Redirecting
-            // UnityConsoleRedirector.Enable();
+            _rootLogger = new RootLogger((int)LogLevel.NotSet);
         }
 
         /// <summary>
@@ -32,23 +29,23 @@ namespace Edanoue.Logging
         /// </summary>
         /// <param name="format"></param>
         /// <param name="level"></param>
-        public static void SetGlobalConfig(LoggerConfig config)
+        public static void SetLevel(LogLevel level)
         {
-            _rootLogger.SetConfig(config);
+            _rootLogger.SetLevel(level);
         }
 
         /// <summary>
-        /// Log message with severity "Verbose" from root logger.
+        /// Log message with severity "Debug" from root logger.
         /// </summary>
         /// <param name="message"></param>
-        public static void Verbose(string message)
+        public static void Debug(string message)
         {
-            _rootLogger.Verbose(message);
+            _rootLogger.Debug(message);
         }
 
-        public static void Verbose(string message, UnityEngine.Object context)
+        public static void Debug(string message, UnityEngine.Object context)
         {
-            _rootLogger.Verbose(message, context);
+            _rootLogger.Debug(message, context);
         }
 
         /// <summary>
@@ -94,17 +91,17 @@ namespace Edanoue.Logging
         }
 
         /// <summary>
-        /// Log message with severity "Fatal" from root logger.
+        /// Log message with severity "Critical" from root logger.
         /// </summary>
         /// <param name="message"></param>
-        public static void Fatal(string message)
+        public static void Critical(string message)
         {
-            _rootLogger.Fatal(message);
+            _rootLogger.Critical(message);
         }
 
-        public static void Fatal(string message, UnityEngine.Object context)
+        public static void Critical(string message, UnityEngine.Object context)
         {
-            _rootLogger.Fatal(message, context);
+            _rootLogger.Critical(message, context);
         }
 
     }

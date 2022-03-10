@@ -2,26 +2,16 @@
 
 namespace Edanoue.Logging
 {
-    public static class LogLevel
+    /// <summary>
+    /// 
+    /// </summary>
+    public enum LogLevel : int
     {
-        public const int Fatal = 300;
-        public const int Error = 200;
-        public const int Warning = 100;
-        public const int Info = 0;
-        public const int Verbose = -100;
-
-        public static string ToString(int level)
-        {
-            return level switch
-            {
-                Fatal => "Fatal",
-                Error => "Error",
-                Warning => "Warning",
-                Info => "Info",
-                Verbose => "Verbose",
-                _ => $"{level}",
-            };
-        }
+        NotSet = 0,
+        Debug = 10,
+        Info = 20,
+        Warning = 30,
+        Error = 40,
+        Critical = 50,
     }
-
 }
