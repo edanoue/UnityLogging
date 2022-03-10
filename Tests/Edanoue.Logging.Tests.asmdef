@@ -1,0 +1,22 @@
+{
+    "name": "Edanoue.Logging.Tests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:8ccb67ff170bf284aa8ef86fabad92cd"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

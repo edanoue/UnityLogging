@@ -15,7 +15,7 @@ namespace Edanoue.Logging
             _rootLogger = Logger.GetRootLogger();
 
             // Enable Unity Redirecting
-            UnityConsoleRedirector.Enable();
+            // UnityConsoleRedirector.Enable();
         }
 
         /// <summary>
@@ -25,9 +25,7 @@ namespace Edanoue.Logging
         /// <returns></returns>
         public static Logger GetLogger(string name)
         {
-            var newLogger = new Logger(name);
-            newLogger.SetParent(_rootLogger);
-            return newLogger;
+            return _rootLogger.GetLogger(name);
         }
 
         /// <summary>

@@ -35,6 +35,18 @@ namespace Edanoue.Logging
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public Logger GetLogger(string name)
+        {
+            var newLogger = new Logger(name);
+            newLogger.SetParent(this);
+            return newLogger;
+        }
+
         internal string Path
         {
             get
@@ -42,7 +54,13 @@ namespace Edanoue.Logging
                 if (this.IsRoot)
                     return "";
                 else
-                    return $"{Parent!.Name}/{this.Name}";
+                {
+                    var parentPath = Parent?.Path;
+                    if (parentPath is null || parentPath == "")
+                        return $"{this.Name}";
+                    else
+                        return $"{parentPath}::{this.Name}";
+                }
             }
         }
 
@@ -58,7 +76,7 @@ namespace Edanoue.Logging
             return rootLogger;
         }
 
-        public bool IsRoot => Parent is null;
+        private bool IsRoot => Parent is null;
 
         private bool AddChild(Logger child)
         {
@@ -70,7 +88,7 @@ namespace Edanoue.Logging
             return this._children.Remove(child);
         }
 
-        internal void SetParent(Logger parent)
+        private void SetParent(Logger parent)
         {
             if (this.Parent is not null)
             {
@@ -160,8 +178,36 @@ namespace Edanoue.Logging
 
         void Log(int level, in string message, UnityEngine.Object? context = null)
         {
+            // Check settings
+            if (level < Config.Level)
+            {
+                return;
+            }
+
             var levelStr = LogLevel.ToString(level);
-            Console.WriteLine($"[{levelStr}] {message}");
+            var formatMessage = "";
+            var loggerPath = Path;
+            if (loggerPath == "")
+            {
+                formatMessage = $"[{levelStr}] {message}";
+            }
+            else
+            {
+                formatMessage = $"[{levelStr}] [{Path}] {message}";
+            }
+
+            if (level < LogLevel.Warning)
+            {
+                Debug.Log(formatMessage, context);
+            }
+            else if (level < LogLevel.Error)
+            {
+                Debug.LogWarning(formatMessage, context);
+            }
+            else
+            {
+                Debug.LogError(formatMessage, context);
+            }
         }
 
         #endregion
