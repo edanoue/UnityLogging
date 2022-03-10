@@ -1,6 +1,5 @@
 #nullable enable
 
-using Edanoue.Logging.Internal;
 using UnityEngine; // UnityEngine.Object
 
 namespace Edanoue.Logging
