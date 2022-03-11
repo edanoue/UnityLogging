@@ -117,6 +117,11 @@ namespace Edanoue.Logging
                 this._Log(level, in message, context);
         }
 
+        public override string ToString()
+        {
+            return $"{typeof(Logger).FullName}: {_name}";
+        }
+
         #endregion
 
         #region Helper Methods

@@ -14,14 +14,38 @@ namespace Edanoue.Logging
     public static class Logging
     {
         /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
+        /// Return a logger with the specified name or, if name is None, return a logger which is the root logger of the hierarchy.
+        /// <param name="name">
+        /// If specified, the name is typically a dot-separated hierarchical
+        /// name like "a", "a.b" or "a.b.c.d". Choice of these names is entirely up to the developer who is using logging.
+        /// </param>
+        /// <returns>logger</returns>
         public static Logger GetLogger(string name)
         {
+            if (string.IsNullOrEmpty(name) || name == "root")
+                return Manager.Root;
             // FIXME
-            // For Unity Gameobject arguments API
+            // Cast For Unity Gameobject arguments API
+            return (Logger)Manager.GetLogger(name);
+        }
+
+        /// <summary>
+        /// Return a logger with the specified class, creating it if necessary.
+        /// </summary>
+        /// <note>
+        /// GetLogger<MyClass>() is same to  GetLogger("MyNamespace.MyClass")
+        /// </note>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static Logger GetLogger<T>()
+        {
+            // Get Type fullname
+            var name = typeof(T).FullName;
+            // Replace nested type separator "+" to "."
+            name = name.Replace("+", ".");
+
+            // FIXME
+            // Cast For Unity Gameobject arguments API
             return (Logger)Manager.GetLogger(name);
         }
 
