@@ -123,6 +123,8 @@ namespace Edanoue.Logging
 
         void _Log(int level, in string message, UnityEngine.Object? context = null)
         {
+            // FIXME: Formatting Feature
+            // FIXME: Handler Feature
             var levelStr = $"{(LogLevel)level}";
             string formatMessage;
             var loggerPath = _name;
