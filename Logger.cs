@@ -12,10 +12,9 @@ namespace Edanoue.Logging
     public class Logger : ILogger
     {
         private readonly string _name;
-        private Logger? _parent = null;
-        private readonly HashSet<Logger> _children = new();
         private int _level;
         private readonly Dictionary<int, bool> _isEnabledForCache = new();
+        private ILogger? _parent;
 
         #region Constructors
 
@@ -41,18 +40,30 @@ namespace Edanoue.Logging
 
         #region ILogger impls
 
+        string ILogger.Name => _name;
+        int ILogger.Level => _level;
+        ILogger? ILogger.Parent
+        {
+            get => _parent;
+            set
+            {
+                _parent = value;
+                _ClearCache();
+            }
+        }
+
         public int EffectiveLevel
         {
             get
             {
-                Logger? logger = this;
+                ILogger? logger = this;
                 while (logger is not null)
                 {
-                    if (logger._level != (int)LogLevel.NotSet)
+                    if (logger.Level != (int)LogLevel.NotSet)
                     {
-                        return logger._level;
+                        return logger.Level;
                     }
-                    logger = logger._parent;
+                    logger = logger.Parent;
                 }
                 return (int)LogLevel.NotSet;
             }
@@ -65,16 +76,20 @@ namespace Edanoue.Logging
         }
 
         public void SetLevel(LogLevel level) => SetLevel((int)level);
+
+        public void Log(int level, string message)
+        {
+            if (IsEnabledFor(level))
+            {
+                this._Log(level, in message);
+            }
+        }
+
         public void Debug(string message) => Log((int)LogLevel.Debug, message);
         public void Info(string message) => Log((int)LogLevel.Info, message);
         public void Warning(string message) => Log((int)LogLevel.Warning, message);
         public void Error(string message) => Log((int)LogLevel.Error, message);
         public void Critical(string message) => Log((int)LogLevel.Critical, message);
-        public void Log(int level, string message)
-        {
-            if (IsEnabledFor(level))
-                this._Log(level, in message);
-        }
 
         public bool IsEnabledFor(int level)
         {
@@ -104,24 +119,20 @@ namespace Edanoue.Logging
 
         #endregion
 
-        #region Internal API
-
-        #endregion
-
         #region Helper Methods
 
         void _Log(int level, in string message, UnityEngine.Object? context = null)
         {
-            var levelStr = $"{level}";
+            var levelStr = $"{(LogLevel)level}";
             string formatMessage;
-            var loggerPath = Path;
-            if (loggerPath == "")
+            var loggerPath = _name;
+            if (loggerPath == "root")
             {
                 formatMessage = $"[{levelStr}] {message}";
             }
             else
             {
-                formatMessage = $"[{levelStr}] [{Path}] {message}";
+                formatMessage = $"[{levelStr}] [{_name}] {message}";
             }
 
             if (level < (int)LogLevel.Warning)
@@ -150,76 +161,5 @@ namespace Edanoue.Logging
 
         #endregion
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public Logger GetLogger(string name)
-        {
-            var newLogger = new Logger(name);
-            newLogger.SetParent(this);
-            return newLogger;
-        }
-
-        internal string Path
-        {
-            get
-            {
-                if (this.IsRoot)
-                    return "";
-                else
-                {
-                    var parentPath = _parent?.Path;
-                    if (parentPath is null || parentPath == "")
-                        return $"{this._name}";
-                    else
-                        return $"{parentPath}::{this._name}";
-                }
-            }
-        }
-
-        private bool IsRoot => _parent is null;
-
-        private bool AddChild(Logger child)
-        {
-            return this._children.Add(child);
-        }
-
-        private bool RemoveChild(Logger child)
-        {
-            return this._children.Remove(child);
-        }
-
-        private void SetParent(Logger parent)
-        {
-            if (this._parent is not null)
-            {
-                this._parent.RemoveChild(this);
-                this._parent = null;
-            }
-            this._parent = parent;
-            this._parent.AddChild(this);
-        }
-
-        #region Helper Methods
-
-
-        #endregion
-    }
-
-    /// <summary>
-    /// A root logger is not that different to any other logger, except that
-    /// it must have a logging level and there is only one instance of it in
-    /// the hierarchy.
-    /// </summary>
-    internal class RootLogger : Logger
-    {
-        /// <summary>
-        /// Initialize the logger with the name "root".
-        /// </summary>
-        /// <param name="level"></param>
-        /// <returns></returns>
-        internal RootLogger(int level) : base("root", level) { }
     }
 }

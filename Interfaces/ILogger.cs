@@ -1,9 +1,12 @@
 #nullable enable
+using System.Collections.Generic;
 
 namespace Edanoue.Logging.Interfaces
 {
-    public interface ILogger
+    public interface ILogger : IManagedItem
     {
+        #region Public API
+
         /// <summary>
         /// Get the effective level for this logger.
         /// </summary>
@@ -77,6 +80,15 @@ namespace Edanoue.Logging.Interfaces
         /// <returns></returns>
         public bool IsEnabledFor(LogLevel level);
 
-    }
+        #endregion
 
+        #region Internal API
+
+        int Level { get; }
+        string Name { get; }
+        ILogger? Parent { get; set; }
+
+        #endregion
+
+    }
 }

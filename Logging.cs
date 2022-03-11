@@ -1,19 +1,18 @@
 #nullable enable
 
 using UnityEngine; // UnityEngine.Object
+using Edanoue.Logging.Internal;
 
 namespace Edanoue.Logging
 {
+    using ILogger = Interfaces.ILogger;
+
+    /// <summary>
+    /// Utility functions at module level.
+    /// Basically delegate everything to the root logger.
+    /// </summary>
     public static class Logging
     {
-        static readonly RootLogger _rootLogger;
-
-        static Logging()
-        {
-            // Create new root logger
-            _rootLogger = new RootLogger((int)LogLevel.NotSet);
-        }
-
         /// <summary>
         /// 
         /// </summary>
@@ -21,7 +20,9 @@ namespace Edanoue.Logging
         /// <returns></returns>
         public static Logger GetLogger(string name)
         {
-            return _rootLogger.GetLogger(name);
+            // FIXME
+            // For Unity Gameobject arguments API
+            return (Logger)Manager.GetLogger(name);
         }
 
         /// <summary>
@@ -31,7 +32,7 @@ namespace Edanoue.Logging
         /// <param name="level"></param>
         public static void SetLevel(LogLevel level)
         {
-            _rootLogger.SetLevel(level);
+            Manager.Root.SetLevel(level);
         }
 
         /// <summary>
@@ -40,12 +41,12 @@ namespace Edanoue.Logging
         /// <param name="message"></param>
         public static void Debug(string message)
         {
-            _rootLogger.Debug(message);
+            Manager.Root.Debug(message);
         }
 
         public static void Debug(string message, UnityEngine.Object context)
         {
-            _rootLogger.Debug(message, context);
+            Manager.Root.Debug(message, context);
         }
 
         /// <summary>
@@ -54,12 +55,12 @@ namespace Edanoue.Logging
         /// <param name="message"></param>
         public static void Info(string message)
         {
-            _rootLogger.Info(message);
+            Manager.Root.Info(message);
         }
 
         public static void Info(string message, UnityEngine.Object context)
         {
-            _rootLogger.Info(message, context);
+            Manager.Root.Info(message, context);
         }
 
         /// <summary>
@@ -68,12 +69,12 @@ namespace Edanoue.Logging
         /// <param name="message"></param>
         public static void Warning(string message)
         {
-            _rootLogger.Warning(message);
+            Manager.Root.Warning(message);
         }
 
         public static void Warning(string message, UnityEngine.Object context)
         {
-            _rootLogger.Warning(message, context);
+            Manager.Root.Warning(message, context);
         }
 
         /// <summary>
@@ -82,12 +83,12 @@ namespace Edanoue.Logging
         /// <param name="message"></param>
         public static void Error(string message)
         {
-            _rootLogger.Error(message);
+            Manager.Root.Error(message);
         }
 
         public static void Error(string message, UnityEngine.Object context)
         {
-            _rootLogger.Error(message, context);
+            Manager.Root.Error(message, context);
         }
 
         /// <summary>
@@ -96,13 +97,22 @@ namespace Edanoue.Logging
         /// <param name="message"></param>
         public static void Critical(string message)
         {
-            _rootLogger.Critical(message);
+            Manager.Root.Critical(message);
         }
 
         public static void Critical(string message, UnityEngine.Object context)
         {
-            _rootLogger.Critical(message, context);
+            Manager.Root.Critical(message, context);
         }
 
+        public static void Log(int level, string message)
+        {
+            Manager.Root.Log(level, message);
+        }
+
+        public static void Log(int level, string message, UnityEngine.Object context)
+        {
+            Manager.Root.Log(level, message, context);
+        }
     }
 }
