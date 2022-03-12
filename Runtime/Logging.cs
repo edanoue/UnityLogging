@@ -1,7 +1,9 @@
 #nullable enable
 
 using System.Collections.Generic;
+using Edanoue.Logging.Interfaces;
 using Edanoue.Logging.Internal;
+
 namespace Edanoue.Logging
 {
     using Object = UnityEngine.Object;
@@ -20,13 +22,13 @@ namespace Edanoue.Logging
         /// name like "a", "a.b" or "a.b.c.d". Choice of these names is entirely up to the developer who is using logging.
         /// </param>
         /// <returns>logger</returns>
-        public static Logger GetLogger(string name)
+        public static ILogger GetLogger(string name)
         {
-            if (string.IsNullOrEmpty(name) || name == "root")
+            if (string.IsNullOrEmpty(name) || name == CONST.ROOT_LOGGER_NAME)
                 return Manager.Root;
             // FIXME
             // Cast For Unity Gameobject arguments API
-            return (Logger)Manager.GetLogger(name);
+            return Manager.GetLogger(name);
         }
 
         /// <summary>
@@ -37,16 +39,36 @@ namespace Edanoue.Logging
         /// </note>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static Logger GetLogger<T>()
+        public static ILogger GetLogger<T>()
         {
             // Get Type fullname
             var name = typeof(T).FullName;
             // Replace nested type separator "+" to "."
-            name = name.Replace("+", ".");
+            name = name.Replace("+", CONST.NAME_SEPARATOR);
 
             // FIXME
             // Cast For Unity Gameobject arguments API
-            return (Logger)Manager.GetLogger(name);
+            return Manager.GetLogger(name);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="addtionalName"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static ILogger GetLogger<T>(string addtionalName)
+        {
+            // Get Type fullname
+            var name = typeof(T).FullName;
+            // Replace nested type separator "+" to "."
+            name = name.Replace("+", CONST.NAME_SEPARATOR);
+            // Add name
+            name += $"{CONST.NAME_SEPARATOR}{addtionalName}";
+
+            // FIXME
+            // Cast For Unity Gameobject arguments API
+            return Manager.GetLogger(name);
         }
 
         /// <summary>
@@ -75,7 +97,7 @@ namespace Edanoue.Logging
         /// <param name="message"></param>
         public static void Debug(string message, Object context)
         {
-            Manager.Root.Debug(message, new Extra("UnityContext", context));
+            Manager.Root.Debug(message, new Extra(CONST.UNITY_CONTEXT_KEY, context));
         }
 
         /// <summary>
@@ -89,7 +111,7 @@ namespace Edanoue.Logging
 
         public static void Info(string message, Object context)
         {
-            Manager.Root.Info(message, new Extra("UnityContext", context));
+            Manager.Root.Info(message, new Extra(CONST.UNITY_CONTEXT_KEY, context));
         }
 
         /// <summary>
@@ -103,7 +125,7 @@ namespace Edanoue.Logging
 
         public static void Warning(string message, Object context)
         {
-            Manager.Root.Warning(message, new Extra("UnityContext", context));
+            Manager.Root.Warning(message, new Extra(CONST.UNITY_CONTEXT_KEY, context));
         }
 
         /// <summary>
@@ -117,7 +139,7 @@ namespace Edanoue.Logging
 
         public static void Error(string message, Object context)
         {
-            Manager.Root.Error(message, new Extra("UnityContext", context));
+            Manager.Root.Error(message, new Extra(CONST.UNITY_CONTEXT_KEY, context));
         }
 
         /// <summary>
@@ -131,7 +153,7 @@ namespace Edanoue.Logging
 
         public static void Critical(string message, Object context)
         {
-            Manager.Root.Critical(message, new Extra("UnityContext", context));
+            Manager.Root.Critical(message, new Extra(CONST.UNITY_CONTEXT_KEY, context));
         }
 
         public static void Log(int level, string message)
@@ -141,7 +163,7 @@ namespace Edanoue.Logging
 
         public static void Log(int level, string message, Object context)
         {
-            Manager.Root.Log(level, message, new Extra("UnityContext", context));
+            Manager.Root.Log(level, message, new Extra(CONST.UNITY_CONTEXT_KEY, context));
         }
     }
 }
