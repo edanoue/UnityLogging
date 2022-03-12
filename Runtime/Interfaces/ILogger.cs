@@ -3,9 +3,17 @@ using System.Collections.Generic;
 
 namespace Edanoue.Logging.Interfaces
 {
+    using Extra = KeyValuePair<string, object>;
+
     public interface ILogger : IManagedItem
     {
         #region Public API
+
+        /// <summary>
+        /// Get the logger name
+        /// </summary>
+        /// <value></value>
+        public string Name { get; }
 
         /// <summary>
         /// Get the effective level for this logger.
@@ -34,30 +42,35 @@ namespace Edanoue.Logging.Interfaces
         /// </summary>
         /// <param name="message"></param>
         public void Debug(string message);
+        public void Debug(string message, params Extra[] extra);
 
         /// <summary>
         /// Log message with seveirty Info
         /// </summary>
         /// <param name="message"></param>
         public void Info(string message);
+        public void Info(string message, params Extra[] extra);
 
         /// <summary>
         /// Log message with seveirty Warning
         /// </summary>
         /// <param name="message"></param>
         public void Warning(string message);
+        public void Warning(string message, params Extra[] extra);
 
         /// <summary>
         /// Log message with seveirty Error
         /// </summary>
         /// <param name="message"></param>
         public void Error(string message);
+        public void Error(string message, params Extra[] extra);
 
         /// <summary>
         /// Log message with seveirty Critical
         /// </summary>
         /// <param name="message"></param>
         public void Critical(string message);
+        public void Critical(string message, params Extra[] extra);
 
         /// <summary>
         /// Log message with the integer severity level.
@@ -65,6 +78,7 @@ namespace Edanoue.Logging.Interfaces
         /// <param name="level"></param>
         /// <param name="message"></param>
         public void Log(int level, string message);
+        public void Log(int level, string message, params Extra[] extra);
 
         /// <summary>
         /// Is this logger enabled for level?
@@ -84,9 +98,8 @@ namespace Edanoue.Logging.Interfaces
 
         #region Internal API
 
-        int Level { get; }
-        string Name { get; }
-        ILogger? Parent { get; set; }
+        internal int Level { get; }
+        internal ILogger? Parent { get; set; }
 
         #endregion
 

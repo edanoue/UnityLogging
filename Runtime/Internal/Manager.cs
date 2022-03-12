@@ -18,6 +18,7 @@ namespace Edanoue.Logging.Internal
         static Manager()
         {
             // Create new root logger this static constructor
+            // root logger default level is "Warning"
             // See. https://github.com/python/cpython/blob/main/Lib/logging/__init__.py#L1939-L1941
             Root = new RootLogger((int)LogLevel.Warning);
         }

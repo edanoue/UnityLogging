@@ -1,11 +1,11 @@
 #nullable enable
 
-using UnityEngine; // UnityEngine.Object
+using System.Collections.Generic;
 using Edanoue.Logging.Internal;
-
 namespace Edanoue.Logging
 {
-    using ILogger = Interfaces.ILogger;
+    using Object = UnityEngine.Object;
+    using Extra = KeyValuePair<string, object>;
 
     /// <summary>
     /// Utility functions at module level.
@@ -68,9 +68,14 @@ namespace Edanoue.Logging
             Manager.Root.Debug(message);
         }
 
-        public static void Debug(string message, UnityEngine.Object context)
+        /// <summary>
+        /// Log message with severity "Debug" from root logger
+        /// with UnityEngine.Object context
+        /// </summary>
+        /// <param name="message"></param>
+        public static void Debug(string message, Object context)
         {
-            Manager.Root.Debug(message, context);
+            Manager.Root.Debug(message, new Extra("UnityContext", context));
         }
 
         /// <summary>
@@ -82,9 +87,9 @@ namespace Edanoue.Logging
             Manager.Root.Info(message);
         }
 
-        public static void Info(string message, UnityEngine.Object context)
+        public static void Info(string message, Object context)
         {
-            Manager.Root.Info(message, context);
+            Manager.Root.Info(message, new Extra("UnityContext", context));
         }
 
         /// <summary>
@@ -96,9 +101,9 @@ namespace Edanoue.Logging
             Manager.Root.Warning(message);
         }
 
-        public static void Warning(string message, UnityEngine.Object context)
+        public static void Warning(string message, Object context)
         {
-            Manager.Root.Warning(message, context);
+            Manager.Root.Warning(message, new Extra("UnityContext", context));
         }
 
         /// <summary>
@@ -110,9 +115,9 @@ namespace Edanoue.Logging
             Manager.Root.Error(message);
         }
 
-        public static void Error(string message, UnityEngine.Object context)
+        public static void Error(string message, Object context)
         {
-            Manager.Root.Error(message, context);
+            Manager.Root.Error(message, new Extra("UnityContext", context));
         }
 
         /// <summary>
@@ -124,9 +129,9 @@ namespace Edanoue.Logging
             Manager.Root.Critical(message);
         }
 
-        public static void Critical(string message, UnityEngine.Object context)
+        public static void Critical(string message, Object context)
         {
-            Manager.Root.Critical(message, context);
+            Manager.Root.Critical(message, new Extra("UnityContext", context));
         }
 
         public static void Log(int level, string message)
@@ -134,9 +139,9 @@ namespace Edanoue.Logging
             Manager.Root.Log(level, message);
         }
 
-        public static void Log(int level, string message, UnityEngine.Object context)
+        public static void Log(int level, string message, Object context)
         {
-            Manager.Root.Log(level, message, context);
+            Manager.Root.Log(level, message, new Extra("UnityContext", context));
         }
     }
 }
