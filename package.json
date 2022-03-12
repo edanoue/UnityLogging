@@ -1,7 +1,7 @@
 {
   "name": "com.edanoue.logging",
   "description": "Unity Console Logging Wrapper like a python logging module",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "displayName": "Logging",
   "unity": "2021.2",
   "author": {
