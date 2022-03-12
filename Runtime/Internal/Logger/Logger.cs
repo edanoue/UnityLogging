@@ -11,9 +11,18 @@ namespace Edanoue.Logging.Internal
     {
         private readonly string _name;
         private int _level;
-        private readonly Dictionary<int, bool> _isEnabledForCache = new();
         private ILogger? _parent;
-        private readonly HashSet<IHandler> _handlers = new();
+        private HashSet<IHandler>? _handlers = null;
+        private static readonly IHandler _defaultHandler = new UnityConsoleHandler(); // FIXME
+
+        // object locks
+        private readonly object _handlersLock = new();
+
+        // System.Object overrides
+        public override string ToString()
+        {
+            return $"{typeof(Logger).FullName}: {_name}";
+        }
 
         #region Constructors
 
@@ -46,7 +55,6 @@ namespace Edanoue.Logging.Internal
             set
             {
                 _parent = value;
-                _ClearCache();
             }
         }
 
@@ -72,78 +80,67 @@ namespace Edanoue.Logging.Internal
         public void SetLevel(int level)
         {
             _level = level;
-            _ClearCache();
         }
 
-        public void SetLevel(LogLevel level) => SetLevel((int)level);
-
-        public void Log(int level, string message)
-        {
-            if (IsEnabledFor(level))
-            {
-                this._Log(level, in message);
-            }
-        }
-        public void Log(int level, string message, params Extra[] extra)
-        {
-            if (IsEnabledFor(level))
-            {
-                this._Log(level, in message, extra);
-            }
-        }
-        public void Debug(string message) => Log((int)LogLevel.Debug, message);
-        public void Debug(string message, params Extra[] extra) => Log((int)LogLevel.Debug, message, extra);
-
-        public void Info(string message) => Log((int)LogLevel.Info, message);
-        public void Info(string message, params Extra[] extra) => Log((int)LogLevel.Info, message, extra);
-
-        public void Warning(string message) => Log((int)LogLevel.Warning, message);
-        public void Warning(string message, params Extra[] extra) => Log((int)LogLevel.Warning, message);
-
-        public void Error(string message) => Log((int)LogLevel.Error, message);
-        public void Error(string message, params Extra[] extra) => Log((int)LogLevel.Error, message, extra);
-
-        public void Critical(string message) => Log((int)LogLevel.Critical, message);
-        public void Critical(string message, params Extra[] extra) => Log((int)LogLevel.Critical, message, extra);
+        public void Log(int level, string message, params Extra[] extra) => _Log(level, message, extra);
+        public void Debug(string message, params Extra[] extra) => _Log((int)LogLevel.Debug, message, extra);
+        public void Info(string message, params Extra[] extra) => _Log((int)LogLevel.Info, message, extra);
+        public void Warning(string message, params Extra[] extra) => _Log((int)LogLevel.Warning, message, extra);
+        public void Error(string message, params Extra[] extra) => _Log((int)LogLevel.Error, message, extra);
+        public void Critical(string message, params Extra[] extra) => _Log((int)LogLevel.Critical, message, extra);
 
         public bool IsEnabledFor(int level)
         {
-            if (_isEnabledForCache.TryGetValue(level, out var isEnabled))
-            {
-                return isEnabled;
-            }
-            return _isEnabledForCache[level] = level >= EffectiveLevel;
+            return level >= EffectiveLevel;
         }
 
-        public bool IsEnabledFor(LogLevel level) => IsEnabledFor((int)level);
+        public void AddHandler(IHandler handler)
+        {
+            lock (_handlersLock)
+            {
+                if (_handlers is null)
+                {
+                    _handlers = new();
+                }
+                _handlers.Add(handler);
+            }
+        }
 
         #endregion
 
-        public override string ToString()
-        {
-            return $"{typeof(Logger).FullName}: {_name}";
-        }
-
         #region Helper Methods
 
-        protected void _Log(int level, in string message, params Extra[] extra)
-        {
-            // FIXME
-            // context みたいなやつをわたしたい
-            // 事前に暮らす内部に貼る配列にある Handler を回すとかをする
-            IHandler handler = new UnityConsoleHandler();
-            var record = new LogRecord(_name, level, message, extra);
-            // 配列を対象に取るべき
-            handler.Emit(record);
-        }
-
         /// <summary>
-        ///  Clear the cache for all loggers in loggerDict
-        /// Called when level changes are made
+        /// 
         /// </summary>
-        void _ClearCache()
+        /// <param name="level"></param>
+        /// <param name="message"></param>
+        /// <param name="extra"></param>
+        protected void _Log(int level, in string message, Extra[] extra)
         {
-            this._isEnabledForCache.Clear();
+            if (!IsEnabledFor(level))
+            {
+                return;
+            }
+
+            var record = new LogRecord(_name, level, message, extra);
+            if (_handlers is not null)
+            {
+                foreach (var handler in _handlers)
+                {
+                    if (level >= handler.Level)
+                    {
+                        handler.Emit(record);
+                    }
+                }
+            }
+            else
+            {
+                if (level >= _defaultHandler.Level)
+                {
+                    _defaultHandler.Emit(record);
+                }
+            }
         }
 
         #endregion

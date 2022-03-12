@@ -43,7 +43,7 @@ namespace Edanoue.Logging.Internal
             }
         }
 
-        internal LogRecord(string name, int level, string message, params Extra[] extra)
+        internal LogRecord(string name, int level, string message, Extra[] extra)
         {
             Name = name;
             Level = level;

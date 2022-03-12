@@ -19,6 +19,7 @@ namespace Edanoue.Logging.Interfaces
         /// </summary>
         /// <param name="level"></param>
         public void SetLevel(int level);
+        public void SetLevel(LogLevel level);
 
         public void SetFormatter(IFormatter formatter);
 

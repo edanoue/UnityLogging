@@ -11,6 +11,25 @@ namespace Edanoue.Logging.Internal
         private IFormatter? _formatter = null;
         private readonly static IFormatter _defaultFormatter = new Formatter();
 
+        #region Constructors
+
+        public UnityConsoleHandler()
+        {
+            _level = (int)LogLevel.NotSet;
+        }
+
+        public UnityConsoleHandler(int level)
+        {
+            _level = level;
+        }
+
+        public UnityConsoleHandler(LogLevel level)
+        {
+            _level = (int)level;
+        }
+
+        #endregion
+
         #region IHandler impls
 
         public int Level => _level;
@@ -19,6 +38,8 @@ namespace Edanoue.Logging.Internal
         {
             _level = level;
         }
+
+        public void SetLevel(LogLevel level) => SetLevel((int)level);
 
         public void SetFormatter(IFormatter formatter)
         {
@@ -29,41 +50,31 @@ namespace Edanoue.Logging.Internal
         {
             var level = record.Level;
             var formatMessage = this.Format(record);
-            // UnityEngine.Object context = record. Fixme
+
+            // Get context from extra. if not exist set null
+            record.TryGetExtra(CONST.UNITY_CONTEXT_KEY, out Object? context);
 
             if (level < (int)LogLevel.Warning)
             {
-                Debug.Log(formatMessage);
-                // Debug.Log(formatMessage, context);
+                Debug.Log(formatMessage, context);
                 return;
             }
 
             if (level < (int)LogLevel.Error)
             {
-                Debug.LogWarning(formatMessage);
-                // Debug.LogWarning(formatMessage, context);
+                Debug.LogWarning(formatMessage, context);
                 return;
             }
 
             // Above error
-            Debug.LogError(formatMessage);
-            // Debug.LogError(formatMessage, context);
+            Debug.LogError(formatMessage, context);
         }
 
         #endregion
 
         string Format(ILogRecord record)
         {
-            IFormatter fmt;
-            if (_formatter is null)
-            {
-                // FIXME
-                fmt = new Formatter();
-            }
-            else
-            {
-                fmt = _formatter;
-            }
+            IFormatter fmt = _formatter ?? _defaultFormatter;
             return fmt.Format(record);
         }
 

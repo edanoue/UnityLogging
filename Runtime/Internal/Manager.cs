@@ -13,7 +13,6 @@ namespace Edanoue.Logging.Internal
     {
         private static readonly Dictionary<string, IManagedItem> _loggerDict = new();
         private static readonly object _loggerDictLock = new();
-        private static readonly string _separator = ".";
 
         static Manager()
         {
@@ -25,7 +24,7 @@ namespace Edanoue.Logging.Internal
 
         #region Public API
 
-        public static RootLogger Root { get; private set; }
+        public static ILogger Root { get; private set; }
 
         /// <summary>
         /// Get a logger with the specified name (channel name), creating it
@@ -86,7 +85,7 @@ namespace Edanoue.Logging.Internal
         private static void _FixupParents(ILogger logger)
         {
             var fullName = logger.Name; // e.g. foo.bar.baz
-            var nameSplit = fullName.Split(_separator); // e.g. [foo, bar, baz]
+            var nameSplit = fullName.Split(CONST.NAME_SEPARATOR); // e.g. [foo, bar, baz]
             int substrCount = nameSplit.Length; // e.g. 3
             ILogger? parent = null;
 
@@ -100,7 +99,7 @@ namespace Edanoue.Logging.Internal
                 for (int j = 0; j < i - 1; j++)
                 {
                     if (j > 0)
-                        substr += _separator;
+                        substr += CONST.NAME_SEPARATOR;
                     substr += nameSplit[j];
                 }
 
