@@ -8,15 +8,30 @@ namespace Examples
     public class UseLogger
     {
         [Test]
-        public void CustomLoggerLogging()
+        public void GetLogger01()
         {
-            // Get logger "A"
+            // Get logger `A`
             var loggerA = Logging.GetLogger("A");
             loggerA.Info("Info message A");
 
-            // Get logger "B" child of "A"
+            // Get logger `A.B`
+            // B is child of `A`
             var loggerB = Logging.GetLogger("A.B");
             loggerB.Info("Info message B");
+        }
+
+        [Test]
+        public void GetLogger02()
+        {
+            // Get logger with Type (this class name)
+            // this equal to call `GetLogger("Examples.UseLogger")`
+            var loggerA = Logging.GetLogger<UseLogger>();
+            loggerA.Info("Info message");
+
+            // Add this function name
+            // this equal to call `GetLogger("Examples.UseLogger.GetLogger02")`
+            var loggerB = Logging.GetLogger<UseLogger>(nameof(GetLogger02));
+            loggerB.Info("Info message");
         }
 
         [Test]
@@ -36,15 +51,16 @@ namespace Examples
             // Set logger A level to Info
             loggerA.SetLevel(LogLevel.Info);
 
-            // Both logs ignored
-            loggerA.Debug("A debug 2"); // Ignored
-            loggerB.Debug("B debug 2"); // Ignored
+            // Both logs ignored, because B has never set level.
+            loggerA.Debug("A debug 2 (Ignored)");
+            loggerB.Debug("B debug 2 (Ignored)");
 
             // Set logger B level to warning
+            // Only ignored B log
             loggerB.SetLevel(LogLevel.Warning);
 
             loggerA.Info("A info 3");
-            loggerB.Info("B info 3"); // Ignored
+            loggerB.Info("B info 3 (Ignored)");
         }
 
         [Test]
