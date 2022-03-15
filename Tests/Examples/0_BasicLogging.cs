@@ -1,9 +1,14 @@
-using NUnit.Framework; // For this script (Not Required)
-using UnityEngine.TestTools; // For this script (Not Required)
+using Edanoue.Logging;
+using NUnit.Framework;
+using UnityEngine;
+using UnityEngine.TestTools;
+// For this script (Not Required)
+
+// For this script (Not Required)
 
 namespace Examples
 {
-    using Edanoue.Logging; // Required Here
+    // Required Here
 
     public class BasicLogging
     {
@@ -25,7 +30,7 @@ namespace Examples
         public void WithUnityObject()
         {
             // Same to use Debug.Log(message, context)
-            var anyObject = new UnityEngine.GameObject();
+            var anyObject = new GameObject();
             Logging.Info("Info message with context", anyObject);
         }
 

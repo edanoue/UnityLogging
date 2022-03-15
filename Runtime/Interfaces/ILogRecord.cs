@@ -3,7 +3,6 @@
 namespace Edanoue.Logging.Interfaces
 {
     /// <summary>
-    /// 
     /// </summary>
     internal interface ILogRecord
     {

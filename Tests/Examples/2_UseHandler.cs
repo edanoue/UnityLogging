@@ -1,9 +1,14 @@
-using NUnit.Framework; // For this script (Not Required)
-using UnityEngine.TestTools; // For this script (Not Required)
+using Edanoue.Logging;
+using Edanoue.Logging.Internal;
+using NUnit.Framework;
+using UnityEngine.TestTools;
+// For this script (Not Required)
+
+// For this script (Not Required)
 
 namespace Examples
 {
-    using Edanoue.Logging; // Required Here
+    // Required Here
 
     public class UseHandler
     {
@@ -24,7 +29,7 @@ namespace Examples
             logger.Info("1 Info message");
 
             // Create Unity Console Handler
-            var handler = new Edanoue.Logging.Internal.UnityConsoleHandler();
+            var handler = new UnityConsoleHandler();
             {
                 // Set Handler level to Error
                 handler.SetLevel(LogLevel.Error);

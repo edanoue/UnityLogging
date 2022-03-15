@@ -1,5 +1,5 @@
-using NUnit.Framework;
 using Edanoue.Logging;
+using NUnit.Framework;
 
 public class ManagerUnitTest
 {
@@ -7,10 +7,10 @@ public class ManagerUnitTest
     public void LoggerIsSameInstance()
     {
         // Get logger "A.B.C"
-        var loggerABC_0 = Logging.GetLogger("A.B.C");
-        var loggerABC_1 = Logging.GetLogger("A.B.C");
+        var loggerAbc0 = Logging.GetLogger("A.B.C");
+        var loggerAbc1 = Logging.GetLogger("A.B.C");
 
-        Assert.That(loggerABC_0, Is.EqualTo(loggerABC_1));
+        Assert.That(loggerAbc0, Is.EqualTo(loggerAbc1));
     }
 
     [Test]
@@ -24,6 +24,5 @@ public class ManagerUnitTest
 
         // Get logger "ManagerUnitTest.A.B
         Logging.GetLogger("ManagerUnitTest.A.B");
-
     }
 }
