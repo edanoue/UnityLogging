@@ -14,11 +14,11 @@ namespace Edanoue.Logging.Internal
             AppendChild(childLogger);
         }
 
+        internal IEnumerable<ILogger> Children => _loggerMap;
+
         internal void AppendChild(ILogger logger)
         {
             _loggerMap.Add(logger);
         }
-
-        internal IEnumerable<ILogger> Children => _loggerMap;
     }
 }

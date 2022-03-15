@@ -18,7 +18,7 @@ namespace Edanoue.Logging.Interfaces
         /// <summary>
         /// Get the effective level for this logger.
         /// </summary>
-        /// <note> 
+        /// <note>
         /// Loop through this logger and its parent in the logger hierarchy,
         /// looking for a non-zero logging level. Return the first one found.
         /// </note>
@@ -35,38 +35,41 @@ namespace Edanoue.Logging.Interfaces
         /// Set the logging level of this logger.
         /// </summary>
         /// <param name="level"></param>
-        public void SetLevel(LogLevel level) => SetLevel((int)level);
+        public void SetLevel(LogLevel level)
+        {
+            SetLevel((int) level);
+        }
 
         /// <summary>
-        /// Log message with seveirty Debug
+        /// Log message with severity Debug
         /// </summary>
         /// <param name="message"></param>
         /// <param name="extra"></param>
         public void Debug(string message, params Extra[] extra);
 
         /// <summary>
-        /// Log message with seveirty Info
+        /// Log message with severity Info
         /// </summary>
         /// <param name="message"></param>
         /// <param name="extra"></param>
         public void Info(string message, params Extra[] extra);
 
         /// <summary>
-        /// Log message with seveirty Warning
+        /// Log message with severity Warning
         /// </summary>
         /// <param name="message"></param>
         /// <param name="extra"></param>
         public void Warning(string message, params Extra[] extra);
 
         /// <summary>
-        /// Log message with seveirty Error
+        /// Log message with severity Error
         /// </summary>
         /// <param name="message"></param>
         /// <param name="extra"></param>
         public void Error(string message, params Extra[] extra);
 
         /// <summary>
-        /// Log message with seveirty Critical
+        /// Log message with severity Critical
         /// </summary>
         /// <param name="message"></param>
         /// <param name="extra"></param>
@@ -92,7 +95,10 @@ namespace Edanoue.Logging.Interfaces
         /// </summary>
         /// <param name="level"></param>
         /// <returns></returns>
-        public bool IsEnabledFor(LogLevel level) => IsEnabledFor((int)level);
+        public bool IsEnabledFor(LogLevel level)
+        {
+            return IsEnabledFor((int) level);
+        }
 
         /// <summary>
         /// Add the specified handler to this logger.
@@ -108,6 +114,5 @@ namespace Edanoue.Logging.Interfaces
         internal ILogger? Parent { get; set; }
 
         #endregion
-
     }
 }

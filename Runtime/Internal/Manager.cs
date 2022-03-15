@@ -1,5 +1,6 @@
 #nullable enable
 
+using System;
 using System.Collections.Generic;
 using Edanoue.Logging.Interfaces;
 
@@ -11,20 +12,20 @@ namespace Edanoue.Logging.Internal
     /// </summary>
     internal static class Manager
     {
-        private static readonly Dictionary<string, IManagedItem> _loggerDict = new();
-        private static readonly object _loggerDictLock = new();
+        private static readonly Dictionary<string, IManagedItem> LoggerDict = new();
+        private static readonly object LoggerDictLock = new();
 
         static Manager()
         {
             // Create new root logger this static constructor
             // root logger default level is "Warning"
             // See. https://github.com/python/cpython/blob/main/Lib/logging/__init__.py#L1939-L1941
-            Root = new RootLogger((int)LogLevel.Warning);
+            Root = new RootLogger((int) LogLevel.Warning);
         }
 
         #region Public API
 
-        public static ILogger Root { get; private set; }
+        public static ILogger Root { get; }
 
         /// <summary>
         /// Get a logger with the specified name (channel name), creating it
@@ -36,36 +37,33 @@ namespace Edanoue.Logging.Internal
         public static ILogger GetLogger(string name)
         {
             ILogger logger;
-            lock (_loggerDictLock)
+            lock (LoggerDictLock)
             {
-                if (_loggerDict.TryGetValue(name, out var node))
+                if (LoggerDict.TryGetValue(name, out var node))
                 {
-                    if (node is ILogger cachedLogger)
+                    switch (node)
                     {
-                        logger = cachedLogger;
-                    }
-                    // Contains but placeholder
-                    else if (node is PlaceHolder placeHolder)
-                    {
-                        // Replace PlaceHolder to Logger
-                        var oldPlaceHolder = placeHolder;
-                        // Remove from Dict
-                        _loggerDict.Remove(name);
-                        // Create new logger
-                        logger = new Logger(name); // FIXME
-                        _loggerDict.Add(name, logger);
-                        _FixupChildren(oldPlaceHolder, logger);
-                        _FixupParents(logger);
-                    }
-                    else
-                    {
-                        throw new System.InvalidProgramException();
+                        case ILogger cachedLogger:
+                            logger = cachedLogger;
+                            break;
+                        // Contains but placeholder
+                        case PlaceHolder placeHolder:
+                            // Remove from Dict
+                            LoggerDict.Remove(name);
+                            // Create new logger
+                            logger = new Logger(name); // FIXME
+                            LoggerDict.Add(name, logger);
+                            _FixupChildren(placeHolder, logger);
+                            _FixupParents(logger);
+                            break;
+                        default:
+                            throw new InvalidProgramException();
                     }
                 }
                 else
                 {
                     logger = new Logger(name); // FIXME
-                    _loggerDict.Add(name, logger);
+                    LoggerDict.Add(name, logger);
                     _FixupParents(logger);
                 }
             }
@@ -86,17 +84,17 @@ namespace Edanoue.Logging.Internal
         {
             var fullName = logger.Name; // e.g. foo.bar.baz
             var nameSplit = fullName.Split(CONST.NAME_SEPARATOR); // e.g. [foo, bar, baz]
-            int substrCount = nameSplit.Length; // e.g. 3
+            var substrCount = nameSplit.Length; // e.g. 3
             ILogger? parent = null;
 
             // Skip self
-            for (int i = substrCount; i > 1 && parent is null; i--)
+            for (var i = substrCount; i > 1 && parent is null; i--)
             {
                 // when input logger name: foo.bar.baz
                 // iter-0: foo.bar
                 // iter-1: foo
-                string substr = "";
-                for (int j = 0; j < i - 1; j++)
+                var substr = "";
+                for (var j = 0; j < i - 1; j++)
                 {
                     if (j > 0)
                         substr += CONST.NAME_SEPARATOR;
@@ -104,33 +102,24 @@ namespace Edanoue.Logging.Internal
                 }
 
                 // Already contains in map
-                if (_loggerDict.TryGetValue(substr, out var node))
-                {
-                    if (node is ILogger parentLogger)
+                if (LoggerDict.TryGetValue(substr, out var node))
+                    switch (node)
                     {
-                        parent = parentLogger;
+                        case ILogger parentLogger:
+                            parent = parentLogger;
+                            break;
+                        case PlaceHolder placeholder:
+                            placeholder.AppendChild(logger);
+                            break;
+                        default:
+                            throw new InvalidProgramException("Invalid type founded");
                     }
-                    else if (node is PlaceHolder placeholder)
-                    {
-                        placeholder.AppendChild(logger);
-                    }
-                    else
-                    {
-                        throw new System.InvalidProgramException("Invalid type founded");
-                    }
-                }
                 // New entry
                 else
-                {
-                    _loggerDict.Add(substr, new PlaceHolder(logger));
-                }
+                    LoggerDict.Add(substr, new PlaceHolder(logger));
             }
 
-            if (parent is null)
-            {
-                parent = Root;
-            }
-
+            parent ??= Root;
             logger.Parent = parent;
         }
 
@@ -148,14 +137,10 @@ namespace Edanoue.Logging.Internal
             foreach (var childLogger in placeHolder.Children)
             {
                 var parentCandidate = childLogger.Parent;
-                if (parentCandidate is not null)
-                {
-                    if (!parentCandidate.Name.StartsWith(newLoggerName))
-                    {
-                        logger.Parent = parentCandidate;
-                        childLogger.Parent = logger;
-                    }
-                }
+                if (parentCandidate is null) continue;
+                if (parentCandidate.Name.StartsWith(newLoggerName)) continue;
+                logger.Parent = parentCandidate;
+                childLogger.Parent = logger;
             }
         }
 

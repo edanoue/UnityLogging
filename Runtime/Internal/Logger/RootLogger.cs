@@ -14,6 +14,8 @@ namespace Edanoue.Logging.Internal
         /// </summary>
         /// <param name="level"></param>
         /// <returns></returns>
-        internal RootLogger(int level) : base("root", level) { }
+        internal RootLogger(int level) : base("root", level)
+        {
+        }
     }
 }

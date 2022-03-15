@@ -1,9 +1,8 @@
 #nullable enable
 
-using NUnit.Framework;
 using Edanoue.Logging;
-
 using ForTesting;
+using NUnit.Framework;
 
 public class LoggingUnitTest
 {
@@ -48,7 +47,6 @@ namespace ForTesting
     {
         internal class NestedClass
         {
-
         }
     }
 }

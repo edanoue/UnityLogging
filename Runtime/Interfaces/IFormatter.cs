@@ -3,7 +3,6 @@
 namespace Edanoue.Logging.Interfaces
 {
     /// <summary>
-    /// 
     /// </summary>
     public interface IFormatter
     {

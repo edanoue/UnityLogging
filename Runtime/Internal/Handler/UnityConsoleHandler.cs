@@ -1,45 +1,53 @@
 #nullable enable
 
-using UnityEngine;
 using Edanoue.Logging.Interfaces;
+using UnityEngine;
 
 namespace Edanoue.Logging.Internal
 {
     public class UnityConsoleHandler : IHandler
     {
-        private int _level;
-        private IFormatter? _formatter = null;
-        private readonly static IFormatter _defaultFormatter = new Formatter();
+        private static readonly IFormatter DefaultFormatter = new Formatter();
+        private IFormatter? _formatter;
+
+        private string Format(ILogRecord record)
+        {
+            var fmt = _formatter ?? DefaultFormatter;
+            return fmt.Format(record);
+        }
 
         #region Constructors
 
         public UnityConsoleHandler()
         {
-            _level = (int)LogLevel.NotSet;
+            Level = (int) LogLevel.NotSet;
         }
 
         public UnityConsoleHandler(int level)
         {
-            _level = level;
+            Level = level;
         }
 
         public UnityConsoleHandler(LogLevel level)
         {
-            _level = (int)level;
+            Level = (int) level;
         }
 
         #endregion
 
         #region IHandler impls
 
-        public int Level => _level;
+        public int Level { get; private set; }
 
         public void SetLevel(int level)
         {
-            _level = level;
+            Level = level;
         }
 
-        public void SetLevel(LogLevel level) => SetLevel((int)level);
+        public void SetLevel(LogLevel level)
+        {
+            SetLevel((int) level);
+        }
 
         public void SetFormatter(IFormatter formatter)
         {
@@ -49,18 +57,18 @@ namespace Edanoue.Logging.Internal
         void IHandler.Emit(ILogRecord record)
         {
             var level = record.Level;
-            var formatMessage = this.Format(record);
+            var formatMessage = Format(record);
 
             // Get context from extra. if not exist set null
             record.TryGetExtra(CONST.UNITY_CONTEXT_KEY, out Object? context);
 
-            if (level < (int)LogLevel.Warning)
+            if (level < (int) LogLevel.Warning)
             {
                 Debug.Log(formatMessage, context);
                 return;
             }
 
-            if (level < (int)LogLevel.Error)
+            if (level < (int) LogLevel.Error)
             {
                 Debug.LogWarning(formatMessage, context);
                 return;
@@ -71,13 +79,5 @@ namespace Edanoue.Logging.Internal
         }
 
         #endregion
-
-        string Format(ILogRecord record)
-        {
-            IFormatter fmt = _formatter ?? _defaultFormatter;
-            return fmt.Format(record);
-        }
-
     }
-
 }

@@ -1,9 +1,12 @@
-using NUnit.Framework; // For this script (Not Required)
-using UnityEngine.TestTools; // For this script (Not Required)
+using Edanoue.Logging;
+using NUnit.Framework;
+// For this script (Not Required)
+
+// For this script (Not Required)
 
 namespace Examples
 {
-    using Edanoue.Logging; // Required Here
+    // Required Here
 
     public class UseLogger
     {
@@ -37,7 +40,7 @@ namespace Examples
         [Test]
         public void LevelInheritanceBehaviour01()
         {
-            // define two familly loggers
+            // define two family loggers
             var loggerA = Logging.GetLogger("A");
             var loggerB = Logging.GetLogger("A.B");
 
