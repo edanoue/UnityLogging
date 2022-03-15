@@ -3,14 +3,8 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-// For this script (Not Required)
-
-// For this script (Not Required)
-
 namespace Examples
 {
-    // Required Here
-
     public class BasicLogging
     {
         [Test]
